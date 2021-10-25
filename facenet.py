@@ -4,12 +4,9 @@
 # In[ ]:
 
 
-import os
 from pathlib import Path
-import gdown
-from functools import partial
 
-from tensorflow.keras.models import Model
+from tensorflow.keras import backend as K
 from tensorflow.keras.layers import Activation
 from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.layers import Concatenate
@@ -21,7 +18,8 @@ from tensorflow.keras.layers import Input
 from tensorflow.keras.layers import Lambda
 from tensorflow.keras.layers import MaxPooling2D
 from tensorflow.keras.layers import add
-from tensorflow.keras import backend as K
+from tensorflow.keras.models import Model
+
 
 def scaling(x, scale):
 	return x * scale

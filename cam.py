@@ -10,10 +10,6 @@ import cv2
  
 def webcam(img):
     capture = cv2.VideoCapture(0)
-    width = int(160)  # 가로
-
-    height = int(160)  # 세로값 가져와서
-
 
 
     while (capture.isOpened):
@@ -47,3 +43,6 @@ def webcam(img):
 
     cv2.destroyAllWindows()
 
+if __name__ == "__main__":
+    cam_path = "/project/cam/liveness_ih.jpg"
+    webcam(cam_path)

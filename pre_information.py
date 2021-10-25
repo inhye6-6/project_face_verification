@@ -1,20 +1,22 @@
+#!/usr/bin/env python
+# coding: utf-8
 
-import sqlite3
+
+from pymongo import MongoClient
+import warnings
 
 import pandas as pd
-import numpy as np
-import os
 from tqdm import tqdm
-import pickle
-import matplotlib.pyplot as plt
-from PIL import Image
-import math
-import time
 
-import facenet
+
 import detect_align
+import facenet
 import ocr
 
+
+# 함수설명
+# - local_dataset<br> local data를 network에 넣어 나온 feature vector를 database에 stroe하기 위해 processing
+# - store<br> local data를 database에 담음
 
 
 def local_dataset(local_path, id_):
@@ -42,40 +44,33 @@ def local_dataset(local_path, id_):
     return df
 
 
-def store(df):
+def insertInfo(df):
+
+    infodb = client.Infodb
+    userInfo = infodb.userInfo
+
     for index, instance in tqdm(df.iterrows(), total=df.shape[0]):
         ID = instance["id"]
         name = instance["name"]
         birth = instance["birth"]
-        embeddings = instance["embedding"]
-
-        insert_statement = "INSERT INTO face_meta (ID,name,birth EMBEDDING) VALUES (?, ?, ?, ?)"
-        insert_args = (ID,name,birth, embeddings.tobytes())
-        cursor.execute(insert_statement, insert_args)
-
-        for i, embedding in enumerate(embeddings):
-            insert_statement = "INSERT INTO face_embeddings (FACE_ID, DIMENSION, VALUE) VALUES (?, ?, ?)"
-            insert_args = (index, i, str(embedding))
-            cursor.execute(insert_statement, insert_args)
-    conn.commit()
+        embeddings = instance["embedding"].tobytes()
+        user = {'_id': ID, 'name': name, 'birth': birth, 'embeddings': embeddings}
+        try:
+            userInfo.insert_one(user)
+        except:
+            print('ID already exists.')
 
 
-# ### main
-
-# In[5]:
-
+# main
 
 if __name__ == "__main__":
+    warnings.filterwarnings('ignore')
+    # now = dt.datetime.now()
     local_path = "/project/img/"
     model = facenet.loadModel()
-    df = local_dataset(local_path,'BBB')
-    conn = sqlite3.connect('pre_info.db')
-    cursor = conn.cursor()
+    df = local_dataset(local_path, "BBB")
 
-    cursor.execute('''drop table if exists face_meta ''')
-    cursor.execute('''drop table if exists face_embeddings''')
-    cursor.execute('''create table face_meta (ID VARCHAR(10) primary key, name VARCHAR(10) , birth INT ,EMBEDDING BLOB)''')
-    cursor.execute('''create table face_embeddings (FACE_ID INT, DIMENSION INT, VALUE DECIMAL(5, 30))''')
+    client = MongoClient('mongodb://localhost:27017/')
 
-    store(df)
+    insertInfo(df)
 

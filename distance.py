@@ -7,8 +7,7 @@
 # In[1]:
 
 
-import matplotlib.pyplot as plt
-import numpy as np   
+import numpy as np
 
 def CosineDistance(source_representation, test_representation):
     a = np.matmul(np.transpose(source_representation), test_representation)
@@ -33,7 +32,7 @@ def verify(img1_embedding, img2_embedding):
     
     #verification
         
-    if distance <= 0.40:
+    if distance <= 0.45:
         print(" True")
         print(" Distance = ",round(distance, 2))
     else: 
