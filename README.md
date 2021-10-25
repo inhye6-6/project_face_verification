@@ -1,5 +1,6 @@
 # project_face-verification
-</br>
+
+
 #### [210725]
 증명사진에서 feature embedding 후 db 저장, webcam에서의 얼굴과 비교</br>
 
